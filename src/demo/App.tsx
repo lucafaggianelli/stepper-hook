@@ -11,16 +11,16 @@ interface StepsDataType {
 
 const Welcome = () => (
   <div>
-    <h2>Welcome to react-use-stepper</h2>
-    <p>A React headless stepper component</p>
+    <h2>Welcome to stepper-hook</h2>
+    <p>React hook for creating custom stepper components</p>
 
     <pre style={{ margin: '2em 1em 0 1em' }}>
       <code style={{ color: 'hotpink' }}># How to Install</code>
       {'\n'}
       <code>
-        {`pnpm add react-use-stepper
-yarn add react-use-stepper
-npm i react-use-stepper`}
+        {`pnpm add stepper-hook
+yarn add stepper-hook
+npm i stepper-hook`}
       </code>
     </pre>
   </div>
@@ -125,13 +125,14 @@ export default function App() {
       <section className="container">
         <h1
           style={{
+            fontFamily: 'monospace',
             background: '#3e3e3e',
             padding: '.15em .5em',
-            borderRadius: '0.1em',
+            borderRadius: '0.2em',
             border: '1px solid #000000',
           }}
         >
-          react-use-stepper
+          useStepper()
         </h1>
 
         <div style={{ width: 550, textAlign: 'center' }}>

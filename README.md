@@ -1,1 +1,1 @@
-# react-use-stepper - A React headless stepper component
+# stepper-hook - React hook for creating custom stepper components

@@ -1,7 +1,7 @@
 {
-  "name": "react-use-stepper",
+  "name": "stepper-hook",
   "version": "0.1.0",
-  "description": "A React headless stepper component",
+  "description": "React hook for creating custom stepper components",
   "author": {
     "name": "Luca Faggianelli",
     "email": "luca@velvetlab.tech",
@@ -11,12 +11,12 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/react-use-stepper.umd.cjs",
-  "module": "./dist/react-use-stepper.js",
+  "main": "./dist/stepper-hook.umd.cjs",
+  "module": "./dist/stepper-hook.js",
   "exports": {
     ".": {
-      "import": "./dist/react-use-stepper.js",
-      "require": "./dist/react-use-stepper.umd.cjs"
+      "import": "./dist/stepper-hook.js",
+      "require": "./dist/stepper-hook.umd.cjs"
     }
   },
   "scripts": {
