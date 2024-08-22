@@ -22,8 +22,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build-docs": "tsc -b && vite build -c vite.config.docs.ts",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublish": "pnpm build"
   },
   "dependencies": {
     "react": "^18.3.1",

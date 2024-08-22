@@ -24,7 +24,11 @@ export default function StepperFooter() {
       <button
         disabled={isLoading || isFirstStep}
         onClick={goToPreviousStep}
-        style={{ display: 'flex', alignItems: 'center', backgroundColor: 'transparent' }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: 'transparent',
+        }}
       >
         <span style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}>
           ←
@@ -47,6 +51,7 @@ export default function StepperFooter() {
           }}
         >
           <div
+            className={isLoading ? 'loading' : ''}
             style={{
               height: '100%',
               backgroundColor: '#3B82F6',
