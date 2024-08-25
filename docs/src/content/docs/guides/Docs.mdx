@@ -1,0 +1,165 @@
+<h2 id="get-started">Install</h2>
+
+Install the package via your package manager of choice.
+
+```sh
+pnpm add stepper-hook
+yarn add stepper-hook
+npm i stepper-hook
+```
+
+## Usage
+
+To create a stepper, use the `<Stepper>` component. The
+only required prop is `steps`, which is an array of React
+components that represent each step.
+
+```tsx
+import { Stepper } from 'stepper-hook'
+
+const steps = [
+  <WelcomeStep />,
+  <Step2 />,
+  <Step3 />
+]
+
+const App = () => (
+  <Stepper steps={steps} />
+)
+```
+
+## Step Component
+
+Steps are standard React components, they are isolated from
+the stepper and can contain anthything you want:
+
+```tsx
+const WelcomeStep = () => (
+  <div>
+    <h2>Welcome to stepper-hook</h2>
+    <p>React hook for creating custom stepper components</p>
+  </div>
+)
+```
+
+## Step Navigation
+
+The navigation may be controlled by the a common component,
+like the footer with directional arrow used in the above example or by the
+steps themselves. Or both.
+
+### By the stepper
+
+```tsx
+function StepperFooter() {
+  const { isFirstStep, isLastStep, goToNextStep, goToPreviousStep } = useStepper()
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <button
+        disabled={isFirstStep}
+        onClick={goToPreviousStep}
+      >
+        Back
+      </button>
+
+      <button
+        onClick={goToNextStep}
+      >
+        {isLastStep ? 'Done' : 'Next'}
+      </button>
+    </div>
+  )
+}
+```
+
+Then place the footer component inside the `<Stepper>` component,
+this is very important because the footer uses React Context to
+communicate with the stepper:
+
+```tsx
+const App = () => (
+  <div>
+    <Stepper steps={steps}>
+      <StepperFooter />
+    </Stepper>
+  </div>
+)
+```
+
+### By the step
+
+You can also control the navigation from the steps themselves,
+this is useful when you don't want to use a common footer component
+or when you want to add custom navigation logic to a specific step.
+
+In this case you don't need any component inside the `<Stepper>`,
+just use the `useStepper` hook inside the step component:
+
+```tsx
+const Step2 = () => {
+  const { goToNextStep } = useStepper()
+
+  const handleAnswer = (event) => {
+    const answer = event.target.textContent
+    saveAnswer(answer)
+    goToNextStep()
+  }
+
+  return (
+    <div>
+      <h2>What's your role in the company?</h2>
+      <button onClick={handleAnswer}>Manager</button>
+      <button onClick={handleAnswer}>Developer</button>
+      <button onClick={handleAnswer}>Marketing</button>
+    </div>
+  )
+}
+```
+
+## `useStepper()` hook
+
+The `useStepper` hook provides the following methods and properties:
+
+```tsx
+const {
+  activeStep,  // The current step index, starting from zero
+  data, // The data object to hold custom data
+  goToNextStep,  // Function to go to the next step
+  goToPreviousStep,  // Function to go to the previous step
+  handleSubmit,  // Function to validate a step before moving to the next one
+  isFirstStep,  // Boolean indicating if the current step is the first one (index 0)
+  isLastStep,  // Boolean indicating if the current step is the last one (index steps.length - 1)
+  isLoading,  // Boolean indicating if the stepper is loading, when handleSubmit is async
+  setActiveStep,  // Function to jump to a specific step
+  setData,  // Function to update the data object
+  totalSteps,  // The total number of steps
+} = useStepper()
+```
+
+## `<Stepper>` component
+
+The `<Stepper>` component accepts the following props:
+
+```tsx
+<Stepper
+  steps={steps}
+  onComplete={() => {
+    alert('Stepper completed!')
+  }}
+  stepComponentWrapper={({ children }) => (
+    // Custom wrapper for the step component, this is useful for adding a custom
+    // styling or layout to the steps and for special cases like adding
+    // FramerMotion animations to the steps (see the examples)
+    <div class="my-step-wrapper">
+      {children}
+    </div>
+  )}
+/>
+```
