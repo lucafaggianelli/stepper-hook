@@ -1,6 +1,6 @@
 {
   "name": "stepper-hook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "React hook for creating custom stepper components",
   "author": {
     "name": "Luca Faggianelli",
@@ -11,6 +11,7 @@
   "files": [
     "dist"
   ],
+  "types": "./dist/stepper-hook.d.ts",
   "main": "./dist/stepper-hook.umd.cjs",
   "module": "./dist/stepper-hook.js",
   "exports": {
@@ -43,6 +44,7 @@
     "globals": "^15.9.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vite-plugin-dts": "^4.0.3"
   }
 }

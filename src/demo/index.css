@@ -27,9 +27,12 @@ body {
   margin: 0;
 }
 
-.container {
+#root {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.container {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -107,17 +110,14 @@ button:focus-visible {
   }
 }
 
-code {
-  font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+pre {
+  padding: 20px 0;
+  border-radius: 16px;
 }
 
-pre {
-  background-color: #3e3e3e;
-  color: #c3c3c3;
-  padding: 1em 1.5em;
-  border-radius: 8px;
-  overflow-x: auto;
-  text-align: left;
+pre > code {
+  display: block;
+  padding: 0 24px;
 }
 
 @keyframes loader-animation {

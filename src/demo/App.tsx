@@ -3,7 +3,6 @@ import { useRef } from 'react'
 import './index.css'
 import { Stepper, useStepper } from '../lib'
 import StepperFooter from './StepperFooter'
-import Docs from './Docs'
 
 interface StepsDataType {
   name: string
@@ -13,16 +12,6 @@ const Welcome = () => (
   <div>
     <h2>Welcome to stepper-hook</h2>
     <p>React hook for creating custom stepper components</p>
-
-    <pre style={{ margin: '2em 1em 0 1em' }}>
-      <code style={{ color: 'hotpink' }}># How to Install</code>
-      {'\n'}
-      <code>
-        {`pnpm add stepper-hook
-yarn add stepper-hook
-npm i stepper-hook`}
-      </code>
-    </pre>
   </div>
 )
 
@@ -121,7 +110,7 @@ const steps = [Welcome, CreateFirstUser, CreateFirstProject, Completed]
 
 export default function App() {
   return (
-    <>
+    <main style={{ paddingBottom: 48 }}>
       <section className="container">
         <h1
           style={{
@@ -159,7 +148,6 @@ export default function App() {
 
         <h1>Get Started 👇</h1>
       </section>
-      <Docs />
-    </>
+    </main>
   )
 }
