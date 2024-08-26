@@ -1,13 +1,25 @@
 import { createContext, PropsWithChildren, useRef, useState } from 'react'
 
-type Handler = () => Promise<boolean> | boolean
+type ValidationHandler = () => Promise<boolean> | boolean
 
 export interface StepperContextType<DataT = unknown> {
   activeStep: number
   data: DataT
   goToNextStep: () => Promise<void>
   goToPreviousStep: () => Promise<void>
-  handleSubmit: (hanler: Handler) => void
+  /**
+   * Used to register a validation handler for the current step.
+   * The validator function is called when the user tries to navigate to the next step.
+   * If the validation fails, the navigation is blocked.
+   *
+   * The handler can be an async or sync function that returns a boolean or throws an error:
+   * the validation is considered successful if the function returns true, and failed if it returns false
+   * or throws an error.
+   *
+   * @param hanler
+   * @returns
+   */
+  handleStepValidation: (hanler: ValidationHandler) => void
   isFirstStep: boolean
   isLastStep: boolean
   isLoading: boolean
@@ -21,7 +33,7 @@ export const StepperContext = createContext<StepperContextType>({
   data: null,
   goToNextStep: async () => {},
   goToPreviousStep: async () => {},
-  handleSubmit: () => true,
+  handleStepValidation: () => true,
   isFirstStep: true,
   isLastStep: false,
   isLoading: false,
@@ -43,7 +55,7 @@ export const StepperProvider: React.FC<ProviderProps> = ({
   const [activeStep, setActiveStepInner] = useState(0)
   const [data, setData] = useState<unknown>(null)
   const [isLoading, setLoading] = useState(false)
-  const handler = useRef<Handler | null>(null)
+  const handler = useRef<ValidationHandler | null>(null)
 
   const isLastStep = activeStep === totalSteps - 1
 
@@ -81,7 +93,7 @@ export const StepperProvider: React.FC<ProviderProps> = ({
 
   const goToNextStep = () => setActiveStep(activeStep + 1)
 
-  const handleSubmit = (nextHandler: Handler) => {
+  const handleStepValidation = (nextHandler: ValidationHandler) => {
     handler.current = nextHandler
   }
 
@@ -94,7 +106,7 @@ export const StepperProvider: React.FC<ProviderProps> = ({
     data,
     goToNextStep,
     goToPreviousStep,
-    handleSubmit,
+    handleStepValidation,
     isFirstStep: activeStep === 0,
     isLastStep,
     isLoading,

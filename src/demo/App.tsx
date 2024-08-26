@@ -16,11 +16,11 @@ const Welcome = () => (
 )
 
 const CreateFirstUser = () => {
-  const { data, goToNextStep, handleSubmit, setData } =
+  const { data, goToNextStep, handleStepValidation, setData } =
     useStepper<StepsDataType>()
   const formRef = useRef<HTMLFormElement>(null)
 
-  handleSubmit(async () => {
+  handleStepValidation(async () => {
     const form = formRef.current
     if (!form) return false
 
