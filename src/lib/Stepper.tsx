@@ -17,13 +17,19 @@ const Inner = ({
 
   const StepComponent = steps[activeStep]
 
-  let output = <StepComponent key={`step-${activeStep}`} />
-
   if (StepComponentWrapper) {
-    output = <StepComponentWrapper>{output}</StepComponentWrapper>
+    return (
+      <StepComponentWrapper>
+        {/*
+        It's important to instantiate the step compoment inside the wrapper
+        as sometimes the wrapper may create a new context
+        */}
+        <StepComponent key={`step-${activeStep}`} />
+      </StepComponentWrapper>
+    )
   }
 
-  return output
+  return <StepComponent key={`step-${activeStep}`} />
 }
 
 export function Stepper({

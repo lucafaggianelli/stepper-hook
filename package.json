@@ -1,6 +1,6 @@
 {
   "name": "stepper-hook",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "React hook for creating custom stepper components",
   "author": {
     "name": "Luca Faggianelli",
