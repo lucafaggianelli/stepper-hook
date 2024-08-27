@@ -1,9 +1,8 @@
 import { useRef } from 'react'
 
+import { Stepper, useStepper, Step } from '../lib'
 import './index.css'
-import { Stepper, useStepper } from '../lib'
 import StepperFooter from './StepperFooter'
-import { Step } from '../lib/types'
 
 interface StepsDataType {
   name: string
