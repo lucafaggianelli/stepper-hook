@@ -1,36 +1,15 @@
 import { createContext, PropsWithChildren, useRef, useState } from 'react'
 
-type ValidationHandler = () => Promise<boolean> | boolean
+import type { ValidationHandler, StepperContextType, Step } from './types'
 
-export interface StepperContextType<DataT = unknown> {
-  activeStep: number
-  data: DataT
-  goToNextStep: () => Promise<void>
-  goToPreviousStep: () => Promise<void>
-  /**
-   * Used to register a validation handler for the current step.
-   * The validator function is called when the user tries to navigate to the next step.
-   * If the validation fails, the navigation is blocked.
-   *
-   * The handler can be an async or sync function that returns a boolean or throws an error:
-   * the validation is considered successful if the function returns true, and failed if it returns false
-   * or throws an error.
-   *
-   * @param hanler
-   * @returns
-   */
-  handleStepValidation: (hanler: ValidationHandler) => void
-  isFirstStep: boolean
-  isLastStep: boolean
-  isLoading: boolean
-  setActiveStep: (step: number) => Promise<void>
-  setData: React.Dispatch<DataT>
-  totalSteps: number
-}
+export const makeStepperContext = <DataT extends object>(
+  data: StepperContextType<DataT>
+) => createContext<StepperContextType<DataT>>(data)
 
-export const StepperContext = createContext<StepperContextType>({
+// Untyped context
+export const StepperContext = makeStepperContext<any>({
   activeStep: 0,
-  data: null,
+  data: {},
   goToNextStep: async () => {},
   goToPreviousStep: async () => {},
   handleStepValidation: () => true,
@@ -42,45 +21,70 @@ export const StepperContext = createContext<StepperContextType>({
   totalSteps: 0,
 })
 
-interface ProviderProps extends PropsWithChildren {
+interface ProviderProps<DataT extends object> extends PropsWithChildren {
+  initialData: DataT
   onComplete?: () => void
-  totalSteps: number
+  steps: Step<DataT>[]
 }
 
-export const StepperProvider: React.FC<ProviderProps> = ({
+export function StepperProvider<DataT extends object>({
+  initialData,
   onComplete,
-  totalSteps,
+  steps,
   children,
-}) => {
+}: ProviderProps<DataT>) {
   const [activeStep, setActiveStepInner] = useState(0)
-  const [data, setData] = useState<unknown>(null)
+  const data = useRef(initialData)
   const [isLoading, setLoading] = useState(false)
   const handler = useRef<ValidationHandler | null>(null)
 
+  const totalSteps = steps.length
+  const isFirstStep = activeStep === 0
   const isLastStep = activeStep === totalSteps - 1
 
-  const setActiveStep = async (step: number, skipSubmit: boolean = false) => {
+  const validateStep = async (): Promise<boolean> => {
+    if (!handler.current) {
+      return true
+    }
+
+    try {
+      setLoading(true)
+      const result = await handler.current()
+      setLoading(false)
+
+      if (!result) {
+        return false
+      }
+    } catch {
+      return false
+    }
+
+    return true
+  }
+
+  const setActiveStep = async (
+    step: number,
+    skipValidation: boolean = false
+  ) => {
     if (step < 0 || step > totalSteps) {
       throw new Error(
         `Invalid step ${step}, it should be between 0 and ${totalSteps}`
       )
     }
 
-    if (!skipSubmit && handler.current) {
-      try {
-        setLoading(true)
-        const result = await handler.current()
-        setLoading(false)
-
-        if (!result) {
-          return
-        }
-      } catch {
+    if (!skipValidation) {
+      if (!(await validateStep())) {
         return
       }
     }
 
-    if (!skipSubmit && isLastStep && onComplete) {
+    if (
+      isLastStep &&
+      // This check basically means that we are in the last step and
+      // we are trying to go to the next step, which means completing the stepper
+      step === totalSteps &&
+      onComplete
+    ) {
       onComplete()
       return
     }
@@ -89,9 +93,46 @@ export const StepperProvider: React.FC<ProviderProps> = ({
     setActiveStepInner(step)
   }
 
-  const goToPreviousStep = () => setActiveStep(activeStep - 1, true)
+  const calculateNextStep = (direction: number = 1): number => {
+    if (direction < 0 && isFirstStep) {
+      throw new Error('You are already in the first step')
+    }
 
-  const goToNextStep = () => setActiveStep(activeStep + 1)
+    let i: number
+
+    for (
+      i = activeStep + 1 * direction;
+      direction > 0 ? i < totalSteps : i >= 0;
+      i = i + direction
+    ) {
+      const potentialNextStep = steps[i]
+
+      if ('showIf' in potentialNextStep && potentialNextStep.showIf) {
+        // If there's a showIf function, we need to check if the step should be shown
+        // If it should, we return the index
+        if (potentialNextStep.showIf(data.current)) {
+          return i
+        }
+      } else {
+        // If there's no showIf function, the step is always shown
+        return i
+      }
+    }
+
+    // If we reach this point, the step is the first or the last
+    return i
+  }
+
+  const goToPreviousStep = () => setActiveStep(calculateNextStep(-1), true)
+
+  const goToNextStep = async () => {
+    if (!(await validateStep())) {
+      return
+    }
+
+    const nextStep = calculateNextStep()
+    setActiveStep(nextStep, true)
+  }
 
   const handleStepValidation = (nextHandler: ValidationHandler) => {
     handler.current = nextHandler
@@ -101,18 +142,24 @@ export const StepperProvider: React.FC<ProviderProps> = ({
     handler.current = null
   }
 
-  const value = {
+  const value: StepperContextType<DataT> = {
     activeStep,
-    data,
+    data: data.current,
     goToNextStep,
     goToPreviousStep,
     handleStepValidation,
-    isFirstStep: activeStep === 0,
+    isFirstStep,
     isLastStep,
     isLoading,
     setActiveStep,
-    setData,
-    setLoading,
+    setData: (setStateAction) => {
+      if (typeof setStateAction === 'function') {
+        data.current = setStateAction(data.current)
+        return
+      }
+
+      data.current = setStateAction
+    },
     totalSteps,
   }
 

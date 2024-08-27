@@ -3,9 +3,12 @@ import { useRef } from 'react'
 import './index.css'
 import { Stepper, useStepper } from '../lib'
 import StepperFooter from './StepperFooter'
+import { Step } from '../lib/types'
 
 interface StepsDataType {
   name: string
+  newProject?: 'on'
+  projectName: string
 }
 
 const Welcome = () => (
@@ -32,9 +35,6 @@ const CreateFirstUser = () => {
     const data = Object.fromEntries(
       new FormData(form).entries()
     ) as unknown as StepsDataType
-    if (data.name === '') {
-      return false
-    }
 
     setData(data)
 
@@ -46,7 +46,7 @@ const CreateFirstUser = () => {
   return (
     <div>
       <h2>What's your name?</h2>
-      <p>Yes, there's form data support</p>
+      <p>Psst... This step will take a bit to submit</p>
 
       <form
         ref={formRef}
@@ -66,15 +66,28 @@ const CreateFirstUser = () => {
           name="name"
           placeholder="Name"
           required
-          defaultValue={data?.name}
+          defaultValue={data.name}
         />
+
+        <div>
+          <input
+            type="checkbox"
+            name="newProject"
+            id="new-project"
+            defaultChecked={data.newProject === 'on'}
+          />
+          <label htmlFor="new-project" style={{ marginLeft: 8 }}>
+            Create a new project?
+          </label>
+        </div>
       </form>
     </div>
   )
 }
 
 const CreateFirstProject = () => {
-  const { data } = useStepper<StepsDataType>()
+  const { data, goToNextStep } = useStepper<StepsDataType>()
+  const formRef = useRef<HTMLFormElement>(null)
 
   return (
     <div>
@@ -83,6 +96,27 @@ const CreateFirstProject = () => {
         Did you see the loading animation? You can use async functions to handle
         the steps progression.
       </p>
+
+      <form
+        ref={formRef}
+        onSubmit={(event) => {
+          event.preventDefault()
+          goToNextStep()
+        }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+          marginTop: 24,
+        }}
+      >
+        <input
+          type="text"
+          name="project-name"
+          placeholder="Project name"
+          required
+        />
+      </form>
     </div>
   )
 }
@@ -106,7 +140,17 @@ const Completed = () => (
   </div>
 )
 
-const steps = [Welcome, CreateFirstUser, CreateFirstProject, Completed]
+const steps: Step<StepsDataType>[] = [
+  Welcome,
+  CreateFirstUser,
+  {
+    component: CreateFirstProject,
+    showIf(data) {
+      return data.newProject === 'on'
+    },
+  },
+  Completed,
+]
 
 export default function App() {
   return (
@@ -128,7 +172,7 @@ export default function App() {
           <Stepper
             steps={steps}
             onComplete={() => {
-              location.hash = '#get-started'
+              alert('Completed!')
             }}
             stepComponentWrapper={({ children }) => (
               <div
