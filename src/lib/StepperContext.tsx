@@ -18,6 +18,7 @@ export const StepperContext = makeStepperContext<any>({
   isLoading: false,
   setActiveStep: async () => {},
   setData: () => {},
+  setLoading: () => {},
   totalSteps: 0,
 })
 
@@ -160,6 +161,7 @@ export function StepperProvider<DataT extends object>({
 
       data.current = setStateAction
     },
+    setLoading,
     totalSteps,
   }
 

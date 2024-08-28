@@ -23,6 +23,7 @@ export interface StepperContextType<DataT extends object> {
   isLoading: boolean
   setActiveStep: (step: number) => Promise<void>
   setData: React.Dispatch<React.SetStateAction<DataT>>
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>
   totalSteps: number
 }
 
