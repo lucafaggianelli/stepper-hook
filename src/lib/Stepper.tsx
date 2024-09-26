@@ -1,39 +1,53 @@
 import { PropsWithChildren } from 'react'
 
+import type { Step } from './types'
 import { StepperProvider } from './StepperContext'
 import { useStepper } from './use-stepper'
 
-interface Props extends PropsWithChildren {
+interface Props<DataT extends object> extends PropsWithChildren {
+  initialData?: DataT
   onComplete?: () => void
   stepComponentWrapper?: React.FC<PropsWithChildren>
-  steps: React.FC[]
+  steps: Step<DataT>[]
 }
 
-const Inner = ({
+function Inner<DataT extends object>({
   steps,
   stepComponentWrapper: StepComponentWrapper,
-}: Pick<Props, 'stepComponentWrapper' | 'steps'>) => {
+}: Pick<Props<DataT>, 'stepComponentWrapper' | 'steps'>) {
   const { activeStep } = useStepper()
 
-  const StepComponent = steps[activeStep]
-
-  let output = <StepComponent key={`step-${activeStep}`} />
+  const step = steps[activeStep]
+  const StepComponent = 'component' in step ? step.component : step
 
   if (StepComponentWrapper) {
-    output = <StepComponentWrapper>{output}</StepComponentWrapper>
+    return (
+      <StepComponentWrapper>
+        {/*
+        It's important to instantiate the step compoment inside the wrapper
+        as sometimes the wrapper may create a new context
+        */}
+        <StepComponent key={`step-${activeStep}`} />
+      </StepComponentWrapper>
+    )
   }
 
-  return output
+  return <StepComponent key={`step-${activeStep}`} />
 }
 
-export function Stepper({
+export function Stepper<DataT extends object>({
+  initialData,
   onComplete,
   steps,
   stepComponentWrapper,
   children,
-}: Props) {
+}: Props<DataT>) {
   return (
-    <StepperProvider totalSteps={steps.length} onComplete={onComplete}>
+    <StepperProvider
+      initialData={initialData ?? ({} as DataT)}
+      steps={steps}
+      onComplete={onComplete}
+    >
       <Inner steps={steps} stepComponentWrapper={stepComponentWrapper} />
       {children}
     </StepperProvider>
