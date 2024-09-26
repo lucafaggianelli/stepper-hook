@@ -1,6 +1,6 @@
 {
   "name": "stepper-hook",
-  "version": "0.2.4",
+  "version": "0.3.1",
   "description": "React hook for creating custom stepper components",
   "author": {
     "name": "Luca Faggianelli",
@@ -26,7 +26,7 @@
     "build-docs": "tsc -b && vite build -c vite.config.docs.ts",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepublish": "pnpm build"
+    "prepare": "pnpm build"
   },
   "dependencies": {
     "react": "^18.3.1",
