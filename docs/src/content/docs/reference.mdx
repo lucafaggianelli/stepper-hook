@@ -1,0 +1,44 @@
+---
+title: Reference
+---
+
+## `useStepper()` hook
+
+The `useStepper` hook provides the following methods and properties:
+
+```tsx
+const {
+  activeStep,  // The current step index, starting from zero
+  data, // The data object to hold custom data
+  goToNextStep,  // Function to go to the next step
+  goToPreviousStep,  // Function to go to the previous step
+  handleSubmit,  // Function to validate a step before moving to the next one
+  isFirstStep,  // Boolean indicating if the current step is the first one (index 0)
+  isLastStep,  // Boolean indicating if the current step is the last one (index steps.length - 1)
+  isLoading,  // Boolean indicating if the stepper is loading, when handleSubmit is async
+  setActiveStep,  // Function to jump to a specific step
+  setData,  // Function to update the data object
+  totalSteps,  // The total number of steps
+} = useStepper()
+```
+
+## `<Stepper>` component
+
+The `<Stepper>` component accepts the following props:
+
+```tsx
+<Stepper
+  steps={steps}
+  onComplete={() => {
+    alert('Stepper completed!')
+  }}
+  stepComponentWrapper={({ children }) => (
+    // Custom wrapper for the step component, this is useful for adding a custom
+    // styling or layout to the steps and for special cases like adding
+    // FramerMotion animations to the steps (see the examples)
+    <div class="my-step-wrapper">
+      {children}
+    </div>
+  )}
+/>
+```

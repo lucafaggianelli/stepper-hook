@@ -173,7 +173,8 @@ export default function App() {
             onComplete={() => {
               alert('Completed!')
             }}
-            stepComponentWrapper={({ children }) => (
+          >
+            {({ step }) => (
               <div
                 style={{
                   padding: 32,
@@ -181,11 +182,11 @@ export default function App() {
                   borderRadius: 16,
                 }}
               >
-                {children}
+                <header>Hey what's up?</header>
+                {step}
+                <StepperFooter />
               </div>
             )}
-          >
-            <StepperFooter />
           </Stepper>
         </div>
 
