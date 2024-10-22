@@ -3,6 +3,12 @@ export type ValidationHandler = () => Promise<boolean> | boolean
 export interface StepperContextType<DataT extends object> {
   activeStep: number
   data: DataT
+  /**
+   * Direction of the navigation: 1 for next, -1 for previous and 0
+   * at the beginning.
+   * This is useful to animate the transition between steps.
+   */
+  direction: number
   goToNextStep: () => Promise<void>
   goToPreviousStep: () => Promise<void>
   /**

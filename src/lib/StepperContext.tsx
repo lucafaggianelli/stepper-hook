@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useRef, useState } from 'react'
+import { createContext, type PropsWithChildren, useRef, useState } from 'react'
 
 import type { ValidationHandler, StepperContextType, Step } from './types'
 
@@ -10,6 +10,7 @@ export const makeStepperContext = <DataT extends object>(
 export const StepperContext = makeStepperContext<any>({
   activeStep: 0,
   data: {},
+  direction: 0,
   goToNextStep: async () => {},
   goToPreviousStep: async () => {},
   handleStepValidation: () => true,
@@ -23,21 +24,30 @@ export const StepperContext = makeStepperContext<any>({
 })
 
 interface ProviderProps<DataT extends object> extends PropsWithChildren {
+  initialStep?: number
   initialData: DataT
   onComplete?: () => void
+  onStepChange?: (step: number, direction: number) => void
   steps: Step<DataT>[]
 }
 
 export function StepperProvider<DataT extends object>({
   initialData,
+  initialStep = 0,
   onComplete,
+  onStepChange,
   steps,
   children,
 }: ProviderProps<DataT>) {
-  const [activeStep, setActiveStepInner] = useState(0)
+  if (initialStep < 0 || initialStep >= steps.length) {
+    throw new Error('Invalid initial step')
+  }
+
+  const [activeStep, setActiveStepInner] = useState(initialStep)
   const data = useRef(initialData)
   const [isLoading, setLoading] = useState(false)
   const handler = useRef<ValidationHandler | null>(null)
+  const direction = useRef(0)
 
   const totalSteps = steps.length
   const isFirstStep = activeStep === 0
@@ -63,10 +73,7 @@ export function StepperProvider<DataT extends object>({
     return true
   }
 
-  const setActiveStep = async (
-    step: number,
-    skipValidation: boolean = false
-  ) => {
+  const setActiveStep = async (step: number, skipValidation = false) => {
     if (step < 0 || step > totalSteps) {
       throw new Error(
         `Invalid step ${step}, it should be between 0 and ${totalSteps}`
@@ -83,18 +90,28 @@ export function StepperProvider<DataT extends object>({
       isLastStep &&
       // This check basically means that we are in the last step and
       // we are trying to go to the next step, which means completing the stepper
-      step === totalSteps &&
-      onComplete
+      step === totalSteps
     ) {
-      onComplete()
+      if (onComplete) {
+        onComplete()
+      } else {
+        console.warn('Stepper completed without an onComplete handler')
+      }
+
       return
     }
 
+    direction.current = Math.sign(step - activeStep)
+
     resetHandlers()
     setActiveStepInner(step)
+
+    if (onStepChange) {
+      onStepChange(step, direction.current)
+    }
   }
 
-  const calculateNextStep = (direction: number = 1): number => {
+  const calculateNextStep = (direction = 1): number => {
     if (direction < 0 && isFirstStep) {
       throw new Error('You are already in the first step')
     }
@@ -146,6 +163,7 @@ export function StepperProvider<DataT extends object>({
   const value: StepperContextType<DataT> = {
     activeStep,
     data: data.current,
+    direction: direction.current,
     goToNextStep,
     goToPreviousStep,
     handleStepValidation,
