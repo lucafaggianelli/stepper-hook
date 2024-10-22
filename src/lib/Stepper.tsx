@@ -1,12 +1,10 @@
-import { StepperProvider } from './StepperContext'
-import type { Step } from './types'
+import { type ProviderProps, StepperProvider } from './StepperContext'
 import { useStepper } from './use-stepper'
 
-interface Props<DataT extends object> {
+interface Props<DataT extends object>
+  extends Omit<ProviderProps<DataT>, 'children' | 'initialData'> {
   children?: (context: { step: React.ReactNode }) => React.ReactNode
   initialData?: DataT
-  onComplete?: () => void
-  steps: Step<DataT>[]
 }
 
 function Inner<DataT extends object>({
@@ -29,15 +27,19 @@ function Inner<DataT extends object>({
 
 export function Stepper<DataT extends object>({
   initialData,
+  initialStep,
   onComplete,
+  onStepChange,
   steps,
   children,
 }: Props<DataT>) {
   return (
     <StepperProvider
       initialData={initialData ?? ({} as DataT)}
-      steps={steps}
+      initialStep={initialStep}
       onComplete={onComplete}
+      onStepChange={onStepChange}
+      steps={steps}
     >
       <Inner steps={steps}>{children}</Inner>
     </StepperProvider>

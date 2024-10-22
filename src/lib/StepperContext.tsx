@@ -23,7 +23,7 @@ export const StepperContext = makeStepperContext<any>({
   totalSteps: 0,
 })
 
-interface ProviderProps<DataT extends object> extends PropsWithChildren {
+export interface ProviderProps<DataT extends object> extends PropsWithChildren {
   initialStep?: number
   initialData: DataT
   onComplete?: () => void
