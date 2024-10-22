@@ -32,13 +32,7 @@ The `<Stepper>` component accepts the following props:
   onComplete={() => {
     alert('Stepper completed!')
   }}
-  stepComponentWrapper={({ children }) => (
-    // Custom wrapper for the step component, this is useful for adding a custom
-    // styling or layout to the steps and for special cases like adding
-    // FramerMotion animations to the steps (see the examples)
-    <div class="my-step-wrapper">
-      {children}
-    </div>
-  )}
-/>
+>
+  {({ step }) => {step}}
+</Stepper>
 ```
