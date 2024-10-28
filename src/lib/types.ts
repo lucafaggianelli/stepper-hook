@@ -1,7 +1,8 @@
 export type ValidationHandler = () => Promise<boolean> | boolean
 
-export interface StepperContextType<DataT extends object> {
+export interface StepperContextType<DataT extends object, MetadataT> {
   activeStep: number
+  allSteps: Step<DataT, MetadataT>[]
   data: DataT
   /**
    * Direction of the navigation: 1 for next, -1 for previous and 0
@@ -33,9 +34,10 @@ export interface StepperContextType<DataT extends object> {
   totalSteps: number
 }
 
-export type Step<DataT extends object> =
+export type Step<DataT extends object = any, MetadataT = any> =
   | React.FC
   | {
       component: React.FC
+      metadata?: MetadataT
       showIf?: (data: DataT) => boolean
     }

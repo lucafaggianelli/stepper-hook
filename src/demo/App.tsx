@@ -143,6 +143,7 @@ const steps: Step<StepsDataType>[] = [
   Welcome,
   CreateFirstUser,
   {
+    metadata: { title: 'Create a new project' },
     component: CreateFirstProject,
     showIf(data) {
       return data.newProject === 'on'

@@ -1,8 +1,8 @@
 import { useContext } from 'react'
 
 import { StepperContext } from './StepperContext'
-import { StepperContextType } from './types'
+import type { StepperContextType } from './types'
 
-export function useStepper<DataT extends object>() {
-  return useContext(StepperContext) as StepperContextType<DataT>
+export function useStepper<DataT extends object, MetadataT = any>() {
+  return useContext(StepperContext) as StepperContextType<DataT, MetadataT>
 }

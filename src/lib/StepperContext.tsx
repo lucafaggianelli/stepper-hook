@@ -2,13 +2,14 @@ import { createContext, type PropsWithChildren, useRef, useState } from 'react'
 
 import type { ValidationHandler, StepperContextType, Step } from './types'
 
-export const makeStepperContext = <DataT extends object>(
-  data: StepperContextType<DataT>
-) => createContext<StepperContextType<DataT>>(data)
+export const makeStepperContext = <DataT extends object, MetadataT>(
+  data: StepperContextType<DataT, MetadataT>
+) => createContext<StepperContextType<DataT, MetadataT>>(data)
 
 // Untyped context
-export const StepperContext = makeStepperContext<any>({
+export const StepperContext = makeStepperContext<any, any>({
   activeStep: 0,
+  allSteps: [],
   data: {},
   direction: 0,
   goToNextStep: async () => {},
@@ -23,22 +24,23 @@ export const StepperContext = makeStepperContext<any>({
   totalSteps: 0,
 })
 
-export interface ProviderProps<DataT extends object> extends PropsWithChildren {
+export interface ProviderProps<DataT extends object, MetadataT>
+  extends PropsWithChildren {
   initialStep?: number
   initialData: DataT
   onComplete?: () => void
   onStepChange?: (step: number, direction: number) => void
-  steps: Step<DataT>[]
+  steps: Step<DataT, MetadataT>[]
 }
 
-export function StepperProvider<DataT extends object>({
+export function StepperProvider<DataT extends object, MetadataT>({
   initialData,
   initialStep = 0,
   onComplete,
   onStepChange,
   steps,
   children,
-}: ProviderProps<DataT>) {
+}: ProviderProps<DataT, MetadataT>) {
   if (initialStep < 0 || initialStep >= steps.length) {
     throw new Error('Invalid initial step')
   }
@@ -160,8 +162,9 @@ export function StepperProvider<DataT extends object>({
     handler.current = null
   }
 
-  const value: StepperContextType<DataT> = {
+  const value: StepperContextType<DataT, MetadataT> = {
     activeStep,
+    allSteps: steps,
     data: data.current,
     direction: direction.current,
     goToNextStep,
