@@ -1,6 +1,6 @@
 import { createContext, type PropsWithChildren, useRef, useState } from 'react'
 
-import type { ValidationHandler, StepperContextType, Step } from './types'
+import type { ValidationHandler, StepperContextType, FullStep } from './types'
 
 export const makeStepperContext = <DataT extends object, MetadataT>(
   data: StepperContextType<DataT, MetadataT>
@@ -30,7 +30,7 @@ export interface ProviderProps<DataT extends object, MetadataT>
   initialData: DataT
   onComplete?: () => void
   onStepChange?: (step: number, direction: number) => void
-  steps: Step<DataT, MetadataT>[]
+  steps: FullStep<DataT, MetadataT>[]
 }
 
 export function StepperProvider<DataT extends object, MetadataT>({

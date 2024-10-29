@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 
-import { Stepper, useStepper, Step } from '../lib'
+import { Stepper, useStepper, type Step } from '../lib'
 import './index.css'
 import StepperFooter from './StepperFooter'
 
